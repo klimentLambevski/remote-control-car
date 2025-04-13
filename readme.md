@@ -10,6 +10,6 @@ Start the server
 node server.js
 ```
 
-Open localhost:3000 on the browser
+Open localhost:3001 on the browser
 
-Open LOCAL_IP:3000/controller on the mobile phone
+Open LOCAL_IP:3001/controller on the mobile phone
