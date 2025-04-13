@@ -44,7 +44,10 @@
 <script src="/socket.io/socket.io.js"></script>
 
 <script>
-  const socket = io();
+  const socket = io('/', {
+    transports: ['websocket'],
+    secure: true,
+  });
   // Log when the connection is established
   socket.on('connect', () => {
     console.log('Connected to the Socket.IO server from Page 2');
