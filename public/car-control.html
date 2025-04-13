@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobile Arrow Keys</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+      user-select: none;
+      margin: 0 20px;
+    }
+    .keyboard {
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+    }
+    .key {
+      padding: 20px;
+      background-color: #ffffff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      font-size: 20px;
+      touch-action: none;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<div class="keyboard">
+  <div class="key up" data-key="ArrowUp">↑</div>
+</div>
+
+<div class="keyboard">
+  <div class="key left" data-key="ArrowLeft">←</div>
+<div class="key right" data-key="ArrowRight">→</div>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+  const socket = io();
+  // Log when the connection is established
+  socket.on('connect', () => {
+    console.log('Connected to the Socket.IO server from Page 2');
+  });
+
+
+  function simulateKeyEvent(key, eventType) {
+    console.log(eventType, key);
+    let command = null;
+    switch (key) {
+      case 'ArrowUp':
+        command = eventType === 'keydown' ? 'START': 'STOP'
+        break;
+      case 'ArrowLeft':
+        command = eventType === 'keydown' ? 'TURN_LEFT_START': 'TURN_LEFT_STOP'
+        break;
+      case 'ArrowRight':
+        command = eventType === 'keydown' ? 'TURN_RIGHT_START': 'TURN_RIGHT_STOP'
+        break;
+    }
+
+    if(command) {
+      socket.emit('COMMAND', {command: command})
+    }
+
+  }
+
+  function vibrateDevice(duration) {
+    if (navigator.vibrate) {
+      navigator.vibrate(duration);
+    }
+  }
+
+  document.querySelectorAll('.key').forEach(button => {
+    button.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      simulateKeyEvent(button.dataset.key, 'keydown');
+      vibrateDevice(50);
+    });
+
+    button.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      simulateKeyEvent(button.dataset.key, 'keyup');
+    });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    console.log('Detected keydown:', e.key);
+  });
+
+  document.addEventListener('keyup', (e) => {
+    console.log('Detected keyup:', e.key);
+  });
+</script>
+
+</body>
+</html>
